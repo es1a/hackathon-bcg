@@ -1,0 +1,96 @@
+Your updated architecture is stronger because it combines farmer-reported problems, historical reports, GPS locations, weather data, and IoT sensor data to make context-aware recommendations.
+
+I would rate this version 9/10 for a hackathon MVP.
+
+## 1. Updated system architecture
+
+Farmer calls hotline
+
+Describes problem in natural language
+
+Azure AI Speech + Azure OpenAI
+
+Speech-to-text → extract problem type, description, location
+
+Azure SQL Database
+
+Store farmer reports, GPS coordinates, timestamps and problem categories
+
+Weather API
+
+IoT Sensors
+
+Previous Calls
+
+FastAPI Aggregation + Recommendation Engine
+
+Combine context → assess risk → recommend countermeasure
+
+Farmer
+
+Spoken recommendation
+
+Officer Dashboard
+
+GPS map, alerts and trends
+
+## 2. Concrete Azure tech stack
+
+| Component                         | Technology                                                                        |
+| --------------------------------- | --------------------------------------------------------------------------------- |
+| Phone interface                   | Azure Communication Services (if telephony enabled); otherwise browser microphone |
+| Speech-to-text / voice            | Azure AI Speech                                                                   |
+| Extract structured problems       | Azure OpenAI structured JSON output                                               |
+| SQL database                      | Azure SQL Database                                                                |
+| Weather data                      | Open-Meteo API                                                                    |
+| Sensor data                       | ESP32 or Python simulator                                                         |
+| Backend and recommendation engine | Python + FastAPI                                                                  |
+| Dashboard with map                | Streamlit + Folium                                                                |
+| AI-generated recommendations      | Python risk rules + Azure OpenAI                                                  |
+
+## 3. Parallel work for 6 people
+
+| Person | Responsibility                   | Deliverable                                                               |
+| ------ | -------------------------------- | ------------------------------------------------------------------------- |
+| 1      | Voice Interface                  | Farmer speech → transcription → structured problem JSON                   |
+| 2      | SQL Database                     | Database schema, report storage, GPS-based historical queries             |
+| 3      | Weather & IoT                    | Weather API integration + simulated sensor readings                       |
+| 4      | Aggregation & Recommendations    | Combine all data and generate risk scores and countermeasures             |
+| 5      | Dashboard & Map                  | Interactive map with farmer reports, severity, filters and charts         |
+| 6      | Backend Integration & Deployment | FastAPI endpoints, shared contracts, Azure deployment, end-to-end testing |
+
+## 4. Suggested SQL data structure
+
+The central `FarmerReports` table could contain:
+
+| Column           | Example                                    |
+| ---------------- | ------------------------------------------ |
+| `report_id`      | 1042                                       |
+| `timestamp`      | 2026-10-16 14:30                           |
+| `latitude`       | -1.2921                                    |
+| `longitude`      | 36.8219                                    |
+| `problem_type`   | Water contamination                        |
+| `description`    | "My crops are dying after heavy rainfall." |
+| `severity`       | High                                       |
+| `recommendation` | Inspect water source and request testing   |
+| `status`         | Open                                       |
+
+Store weather and sensor readings separately, linked by location and time.
+
+## 5. Most important feature: historical spatial intelligence
+
+Your biggest differentiator is using previous farmer calls to identify emerging regional problems.
+
+Example:
+
+A farmer reports that crops are dying. The system finds that six other farmers within a 5 km radius reported similar symptoms during the last three days. Heavy rainfall was also recorded.
+
+Instead of providing a generic response, the system could say:
+
+> "Several nearby farmers have reported similar problems following heavy rainfall. There may be a regional water-quality issue. Avoid using the suspected source for irrigation until it has been assessed, and contact a local agricultural officer."
+
+This should be presented as a possible issue, not a confirmed diagnosis.
+
+Two critical implementation details: GPS coordinates cannot reliably be derived from the phone call itself, so ask for a village/location or use a registered farm location. Also, ensure the dashboard updates from the same SQL data used for recommendations, so the farmer response and officer view remain consistent.
+
+For the hackathon: Prioritize one complete scenario: farmer speaks → problem gets stored → nearby reports are identified → weather and sensor data are considered → recommendation is spoken → the incident appears on the officer's map.
